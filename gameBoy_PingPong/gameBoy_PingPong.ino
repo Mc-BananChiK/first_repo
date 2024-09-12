@@ -71,7 +71,6 @@ class PingPong {
       int tim = millis();
       while (millis() - tim < del) {
       }
-      tim = millis();
     }
 };
 
