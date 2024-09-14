@@ -11,7 +11,7 @@ GyverOLED<SSD1306_128x64, OLED_BUFFER, OLED_SPI, CS, DS, RST> oled;
 
 class PingPong {
   private:
-    int x, y, w, h, del, radius, S, Cy0, Cy1 ,Cy2;
+    int x, y, w, h, del, radius, S, Cy0, Cy1;
 
   public:
     PingPong(int w, int h, int radius, int del) {
@@ -26,40 +26,56 @@ class PingPong {
 
     bool newCoordinate() {
       if (S == 1) {
+        x--;
+        y--;
+      }
+      if (S == 2) {
+        x++;
+        y--;
+      }
+      if (S == 3) {
+        x++;
+        y++;
+      }
+      if (S == 4) {
+        x--;
+        y++;
+      }
+      
+      if (S == 1) {
         for (int X = radius; X < w - radius; X++) if (y == radius && x == X) S = 4; // для s = 1
-        for (int Y = radius; Y < h - radius; Y++) if (x == radius && y == Y) S = 2;
+        for (int Y = radius; Y < h - radius; Y++) for(int CY = Cy1; CY <= Cy1+15; CY++) if (x == 3 && CY == y){
+          S = 2;
+          return true;
+        }
+        for (int Y = radius; Y < h - radius; Y++) if (x == 3 && Y == y) return false;
       }
 
       if (S == 2) {
         for (int X = radius; X < w - radius; X++) if (y == radius && x == X) S = 3; // для s = 2
-        for (int Y = radius; Y < h - radius; Y++) if (x == 127-radius && y == Y) S = 1;
+        for (int Y = radius; Y < h - radius; Y++) for(int CY = Cy1; CY <= Cy1+15; CY++) if (x == 124 && CY == y){
+          S = 1;
+          return true;
+        }
+        for (int Y = radius; Y < h - radius; Y++) if (x == 3 && Y == y) return false;
       }
 
       if (S == 3) {
         for (int X = radius; X < w - radius; X++) if (y == 63-radius && x == X) S = 2; // для s = 3
-        for (int Y = radius; Y < h - radius; Y++) if (x == 127-radius && y == Y) S = 4;
+        for (int Y = radius; Y < h - radius; Y++) for(int CY = Cy1; CY <= Cy1+15; CY++) if (x == 124 && CY == y){
+          S = 4;
+          return true;
+        }
+        for (int Y = radius; Y < h - radius; Y++) if (x == 3 && Y == y) return false;
       }
 
       if (S == 4) {
         for (int X = radius; X < w - radius; X++) if (y == 63-radius && x == X) S = 1; // для s = 4
-        for (int Y = radius; Y < h - radius; Y++) if (x == radius && y == Y) S = 3;
-      }
-
-      if (S == 1) {
-        x--;
-        y--;
-      }
-      if (S == 2) {
-        x++;
-        y--;
-      }
-      if (S == 3) {
-        x++;
-        y++;
-      }
-      if (S == 4) {
-        x--;
-        y++;
+        for (int Y = radius; Y < h - radius; Y++) for(int CY = Cy1; CY <= Cy1+15; CY++) if (x == 3 && CY == y) {
+          S = 3;
+          return true;
+        }
+        for (int Y = radius; Y < h - radius; Y++) if (x == 3 && Y == y) return false;
       }
     }
 
@@ -73,9 +89,8 @@ class PingPong {
     void drawJoystick(){
       Cy0 = analogRead(A0);
       Cy1 = map(Cy0, 0, 1023, 3, 45);
-      Cy2 = map(Cy0, 0, 1023, 3, 45);
       oled.fastLineV(3, Cy1, Cy1+15, OLED_FILL);
-      oled.fastLineV(124, Cy2, Cy2+15, OLED_FILL);
+      oled.fastLineV(124, Cy1, Cy1+15, OLED_FILL);
     }
     
     void show() {
@@ -94,13 +109,16 @@ void setup() {
   oled.clear();
   oled.home();
   oled.update();
-  
-  PingPong p(128, 64, 3, 25);
-
-  while (true) {
-    p.newCoordinate();
-    p.show();
-  }
 }
 
-void loop() {}
+void loop() {
+  PingPong p(128, 64, 3, 25);
+  
+  while (true) {
+    if(!p.newCoordinate()){
+      break;
+    }
+    p.newCoordinate();
+    p.show();
+  }  
+}
