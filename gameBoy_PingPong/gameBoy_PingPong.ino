@@ -5,14 +5,13 @@
 #define CS  9
 #define DS  8
 #define RST 7
-#define OLED_NO_PRINT
 
 GyverOLED<SSD1306_128x64, OLED_BUFFER, OLED_SPI, CS, DS, RST> oled;
 
 
 class PingPong {
   private:
-    int x, y, w, h, del, radius, S;
+    int x, y, w, h, del, radius, S, Cy0, Cy1 ,Cy2;
 
   public:
     PingPong(int w, int h, int radius, int del) {
@@ -25,7 +24,7 @@ class PingPong {
       S = 1;
     }
 
-    int newCoordinate() {
+    bool newCoordinate() {
       if (S == 1) {
         for (int X = radius; X < w - radius; X++) if (y == radius && x == X) S = 4; // для s = 1
         for (int Y = radius; Y < h - radius; Y++) if (x == radius && y == Y) S = 2;
@@ -64,13 +63,28 @@ class PingPong {
       }
     }
 
+    void drawPole(){
+      oled.fastLineH(0, 0, 127, OLED_FILL);
+      oled.fastLineH(63, 0, 127, OLED_FILL);
+      oled.fastLineV(0, 0, 63, OLED_FILL);
+      oled.fastLineV(127, 0, 63, OLED_FILL);
+    }
+
+    void drawJoystick(){
+      Cy0 = analogRead(A0);
+      Cy1 = map(Cy0, 0, 1023, 3, 45);
+      Cy2 = map(Cy0, 0, 1023, 3, 45);
+      oled.fastLineV(3, Cy1, Cy1+15, OLED_FILL);
+      oled.fastLineV(124, Cy2, Cy2+15, OLED_FILL);
+    }
+    
     void show() {
       oled.clear();
+      drawPole();
+      drawJoystick();
       oled.circle(x, y, radius, OLED_FILL);
       oled.update();
-      int tim = millis();
-      while (millis() - tim < del) {
-      }
+      delay(del);
     }
 };
 
@@ -80,8 +94,8 @@ void setup() {
   oled.clear();
   oled.home();
   oled.update();
-
-  PingPong p(128, 64, 3, 50);
+  
+  PingPong p(128, 64, 3, 25);
 
   while (true) {
     p.newCoordinate();
