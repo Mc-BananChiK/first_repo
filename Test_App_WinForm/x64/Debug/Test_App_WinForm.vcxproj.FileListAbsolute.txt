@@ -1,0 +1,3 @@
+C:\Users\user\Desktop\Программирование\проекты\C++\Test_App_WinForm\Test_App_WinForm\x64\Debug\Test_App_WinForm.vcxproj.AssemblyReference.cache
+C:\Users\user\Desktop\Программирование\проекты\C++\Test_App_WinForm\Test_App_WinForm\x64\Debug\TestAppWinForm.HomeForm.resources
+C:\Users\user\Desktop\Программирование\проекты\C++\Test_App_WinForm\Test_App_WinForm\x64\Debug\Test_App_WinForm.vcxproj.GenerateResource.cache
